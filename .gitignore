@@ -1,0 +1,14 @@
+
+# Ignore raw daten and outputs
+input_data/
+results/
+resluts_archive/
+
+# Ignore temporal R-data
+.Rhistory
+.RData
+.Rproj.user/
+.MUST.Rproj
+
+# Ignore copyright mapping tables
+copyright_catalogs/

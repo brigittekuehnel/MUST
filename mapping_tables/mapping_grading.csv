@@ -1,0 +1,24 @@
+﻿grading;Grad
+G0 - Malignes Melanom der Konjunktiva;G0
+Grad I - Gut differenziert;G1
+Grad II - Mäßig differenziert;G2
+Grad III - Schlecht differenziert;G3
+Grad IV - Undifferenziert;G4
+U - Unbekannt;GX
+GX - Nicht bestimmbar;GX
+H - High grade (G3 oder G4);H
+L - Low grade (G1 oder G2);L
+HM - hohe Mitoserate (GIST);HM
+NM - niedrige Mitoserate (GIST);NM
+G - Grenzfall / Borderline;GX
+M - Intermediate (G2 oder G3);M
+T- Trifft nicht zu;GX
+G1;G1
+G2;G2
+G3;G3
+GU;GX
+GX;GX
+H;H
+L;L
+HM;HM
+NM;NM
