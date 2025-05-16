@@ -13,6 +13,9 @@ library(openxlsx)    # For working with Excel files
 library(purrr)
 library(stringr)
 
+# Create 'results' folder if it does not already exist
+if (!dir.exists("results")) dir.create("results")
+
 # ========================================================================
 # Define Subgroup for Analysis
 # ========================================================================

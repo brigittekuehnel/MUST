@@ -37,3 +37,5 @@ original;GIST;;C16;7,8;;;;1;;;;;;;;;;;;
 original;GISTSmallIntestine;C48.1;;7,8;;;;1;;;;;;;;;;;;Mesentery
 original;GISTSmallIntestine;C17.0, C17.1, C17.2;C15 ,  C18 , C20 ;7,8;;;;1;;;;;;;;;;;;
 additional;GISTSmallIntestine;;C17, C15 ,  C18 , C20 ;7,8;;;;1;;;;;;;;;;;;
+original;PancreasNET;;C25;8;;neuroendo;;;;;;;;;;;;;;
+original;GIST;;C16;7,8;;GIST;;;;;;;;;;;;;;

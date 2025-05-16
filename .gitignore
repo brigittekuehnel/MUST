@@ -1,6 +1,6 @@
 
-# Ignore raw daten and outputs
-input_data/
+# Ignore raw data and outputs
+data_tnm_full.csv
 results/
 resluts_archive/
 
@@ -11,4 +11,6 @@ resluts_archive/
 .MUST.Rproj
 
 # Ignore copyright mapping tables
-copyright_catalogs/
+mapping_table_R_loc_MUST.csv
+mapping_uicc_original.csv
+mapping_uicc_additional.csv
