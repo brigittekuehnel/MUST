@@ -14,7 +14,7 @@ getwd()
 d_map <- read.delim("copyright_catalogs/mapping_uicc_original.csv", header = TRUE, sep = ";", as.is = TRUE)
 dim(d_map)
 head(d_map)
-table(d_map$mapping)
+table(d_map$mapping, useNA = "always")
 
 d_map <- d_map %>%
   arrange(
@@ -169,14 +169,15 @@ d_map_automated_add_sort <- d_map_automated_add %>%
   )
 
 #Display results table
-table(d_map_automated_add_sort$mapping)
+table(d_map_automated_add_sort$mapping, useNA = "always")
 
 # Step 2: Relabel mappings to reduce granularity
 
 d_map_automated_add_sort$mapping <- ifelse(substr(d_map_automated_add_sort$mapping, 1, 18) == "additional_assured", "additional_assured",
                                            ifelse(substr(d_map_automated_add_sort$mapping, 1, 14) == "additional_min", "additional_min",
                                                   ifelse(substr(d_map_automated_add_sort$mapping, 1, 18) == "additional_Grading", "additional_grading",
-                                                         ifelse(substr(d_map_automated_add_sort$mapping, 1, 14) == "original", "original", NA))))
+                                                         ifelse(substr(d_map_automated_add_sort$mapping, 1, 20) == "additional_x_entity", "additional_x_entity",
+                                                              ifelse(substr(d_map_automated_add_sort$mapping, 1, 14) == "original", "original", NA)))))
 
 # Final export of results
 
@@ -187,6 +188,6 @@ dim(d_map_automated_add_sort)
 dim(unique(d_map_automated_add_sort))
 
 #Display results table
-table(d_map_automated_add_sort$mapping)
+table(d_map_automated_add_sort$mapping, useNA = "always")
 
 d_map_automated_add_sort[1:20, 1:10]
