@@ -13,6 +13,12 @@ library(openxlsx)    # For working with Excel files
 library(purrr)
 library(stringr)
 
+# Load required package for kappa
+if (!requireNamespace("psych", quietly = TRUE)) {
+  install.packages("psych")
+}
+library(psych)
+
 # Create 'results' folder if it does not already exist
 if (!dir.exists("results")) dir.create("results")
 
@@ -925,3 +931,111 @@ colnames(uicc_loc) <- c("MUST_UICC", "ICDO_loc", "Frequency", "Percent")
 
 write.xlsx(uicc_loc[uicc_loc$Frequency!=0,], "results/Result4_FreqUICC.byEntity.xlsx", quote = FALSE, rowNames = FALSE, colNames = TRUE)
 
+# ========================================================================
+# Extract UICC stage groups (Roman numerals I–IV)
+# ========================================================================
+result_uicc$MUST_UICC_gr <- ifelse(
+  result_uicc$MUST_UICC == "no carcinoma",
+  NA,
+  gsub("^([IV]+).*", "\\1", result_uicc$MUST_UICC)
+)
+
+result_uicc$doc_UICC_gr <- ifelse(
+  result_uicc$DOCUMENTED_UICC == "0is",
+  "0",
+  gsub("^([IV]+).*", "\\1", result_uicc$DOCUMENTED_UICC)
+)
+
+# ========================================================================
+# Compute weighted Cohen’s Kappa (unstratified)
+# ========================================================================
+
+tab <- table(result_uicc$MUST_UICC_gr, result_uicc$doc_UICC_gr)
+print(tab)  # show contingency table
+
+kappa <- cohen.kappa(data.frame(result_uicc$MUST_UICC_gr, result_uicc$doc_UICC_gr))
+
+# Extract weighted kappa result with confidence intervals
+wk <- round(kappa$confid["weighted kappa", , drop = FALSE], 4)
+wk <- cbind(Method = "weighted kappa", wk)
+
+# Export result
+write.xlsx(wk, "results/Result10_Kappa.xlsx", quote = FALSE, rowNames = FALSE, colNames = TRUE)
+print(wk)
+
+# ========================================================================
+# Compare MUST vs documented UICC: higher/lower/equal
+# ========================================================================
+
+roman_to_num <- c("0" = 0, "I" = 1, "II" = 2, "III" = 3, "IV" = 4)
+
+# Map Roman stages to numeric values
+result_uicc$doc_UICC_gr_num  <- roman_to_num[as.character(result_uicc$doc_UICC_gr)]
+result_uicc$MUST_UICC_gr_num <- roman_to_num[as.character(result_uicc$MUST_UICC_gr)]
+
+# Define direction of deviation
+result_uicc$comparison <- ifelse(
+  is.na(result_uicc$doc_UICC_gr_num) | is.na(result_uicc$MUST_UICC_gr_num), NA,
+  ifelse(result_uicc$doc_UICC_gr_num == result_uicc$MUST_UICC_gr_num, "equal",
+         ifelse(result_uicc$MUST_UICC_gr_num > result_uicc$doc_UICC_gr_num, "higher", "lower"))
+)
+
+# Compute frequency and percentages
+comp_tab <- table(result_uicc$comparison, useNA = "ifany")
+total <- sum(comp_tab)
+
+# Build output table
+comparison_summary <- data.frame(
+  Category = c(names(comp_tab)),
+  Frequency = as.integer(comp_tab),
+  Percent = round(100 * as.integer(comp_tab) / total, 1)
+)
+
+# Replace NA label for clarity
+comparison_summary$Category[is.na(comparison_summary$Category)] <- "missing"
+
+# Export to CSV
+
+write.xlsx(comparison_summary, "results/Result11.1.RelativeChange.xlsx", quote = FALSE, rowNames = FALSE, colNames = TRUE)
+print(comparison_summary)
+
+# ========================================================================
+# Grouped overview: robust frequency + percentage for comparison categories
+# ========================================================================
+
+overview_list <- list()
+
+for (grp in unique(result_uicc$ICDO_LOC)) {
+  df_grp <- subset(result_uicc, ICDO_LOC == grp)
+  
+  # Extract comparison values
+  comp_vec <- df_grp$comparison
+  
+  # Count values including NAs
+  equal   <- sum(comp_vec == "equal", na.rm = TRUE)
+  higher  <- sum(comp_vec == "higher", na.rm = TRUE)
+  lower   <- sum(comp_vec == "lower", na.rm = TRUE)
+  missing <- sum(is.na(comp_vec))
+  
+  total <- equal + higher + lower + missing
+  if (total == 0) total <- 1  # avoid division by zero
+  
+  overview_list[[grp]] <- data.frame(
+    group = grp,
+    equal = equal,
+    higher = higher,
+    lower = lower,
+    missing = missing,
+    equal_pct = round(100 * equal / total, 1),
+    higher_pct = round(100 * higher / total, 1),
+    lower_pct = round(100 * lower / total, 1),
+    missing_pct = round(100 * missing / total, 1)
+  )
+}
+
+# Combine all group results
+overview_summary <- do.call(rbind, overview_list)
+
+# Export to xlsx
+write.xlsx(overview_summary, "results/Result11.2.RelativeChange.byEntity.xlsx", quote = FALSE, rowNames = FALSE, colNames = TRUE)
+print(overview_summary)
