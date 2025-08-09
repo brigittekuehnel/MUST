@@ -1,3 +1,7 @@
+# MIT License
+# Copyright (c) 2025 Brigitte Kuehnel
+# See LICENSE file for details
+
 # ============================================================
 # UICC MUST Project – Add RWD_UICC rules to the main mapping table
 # ============================================================

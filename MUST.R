@@ -1,3 +1,7 @@
+# MIT License
+# Copyright (c) 2025 Brigitte Kuehnel
+# See LICENSE file for details
+
 # ========================================================================
 # Clear Environment and Load Required Libraries
 # ========================================================================
